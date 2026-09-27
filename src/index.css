@@ -1,0 +1,73 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    background: radial-gradient(circle at center, #1b1813 0%, #0c0b09 70%, #050504 100%);
+    color: #f3e8ca;
+    min-height: 100vh;
+    font-family: 'Montserrat', sans-serif;
+  }
+}
+
+/* Gold Gradient Text */
+.text-gold-gradient {
+  background: linear-gradient(135deg, #fff3c4 0%, #E6CA65 30%, #D4AF37 60%, #997415 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Gold Border Frame for Cards & Containers (matches the image's gold border style) */
+.gold-frame {
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.08), inset 0 0 15px rgba(0, 0, 0, 0.8);
+  position: relative;
+}
+
+.gold-frame-double {
+  border: 1px solid rgba(212, 175, 55, 0.5);
+  outline: 1px solid rgba(212, 175, 55, 0.2);
+  outline-offset: -5px;
+  background: rgba(18, 16, 12, 0.9);
+  position: relative;
+}
+
+/* Elegant flourish line divider */
+.gold-divider {
+  display: flex;
+  items-center: center;
+  text-align: center;
+  color: #D4AF37;
+  margin: 1rem 0;
+}
+
+.gold-divider::before,
+.gold-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+.gold-divider:not(:empty)::before {
+  margin-right: 1em;
+}
+
+.gold-divider:not(:empty)::after {
+  margin-left: 1em;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #0c0b09;
+}
+::-webkit-scrollbar-thumb {
+  background: #4a3c17;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #D4AF37;
+}
