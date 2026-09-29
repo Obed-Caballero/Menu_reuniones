@@ -1,9 +1,29 @@
 import React, { useState, useMemo } from 'react';
-import { Search, Plus } from 'lucide-react';
+import { Search, Plus, GlassWater, Package, AlertCircle } from 'lucide-react';
 
-export default function MenuSection({ menu, onSelectDrink, onOpenAddDrink }) {
+export default function MenuSection({ menu, orders, onSelectDrink, onOpenAddDrink, onOpenTempDrink, onOpenStock }) {
   const [selectedCategory, setSelectedCategory] = useState('Todos');
   const [searchTerm, setSearchTerm] = useState('');
+
+  // 1. Calcular dinámicamente la bebida MÁS PEDIDA para asignarle el badge "POPULAR"
+  const mostPopularDrinkName = useMemo(() => {
+    if (!orders || orders.length === 0) return null;
+    const counts = {};
+    orders.forEach(o => {
+      if (!o.isTemporary) {
+        counts[o.drinkName] = (counts[o.drinkName] || 0) + 1;
+      }
+    });
+    let maxCount = 0;
+    let popularName = null;
+    Object.entries(counts).forEach(([name, count]) => {
+      if (count > maxCount) {
+        maxCount = count;
+        popularName = name;
+      }
+    });
+    return popularName;
+  }, [orders]);
 
   // Extracción de categorías únicas
   const categories = useMemo(() => {
@@ -62,6 +82,25 @@ export default function MenuSection({ menu, onSelectDrink, onOpenAddDrink }) {
           <p className="text-xs md:text-sm text-gold-100/70 font-sans tracking-wide">
             Selecciona la bebida que prefieras para tu orden. Puedes agregar notas especiales como <span className="text-gold-300 font-semibold">"sin hielo"</span> o <span className="text-gold-300 font-semibold">"doble de ron"</span>.
           </p>
+
+          {/* Botones de Acción Rápida Banner */}
+          <div className="flex items-center justify-center gap-3 pt-3">
+            <button
+              onClick={onOpenTempDrink}
+              className="bg-gold-500/10 hover:bg-gold-500/20 text-gold-300 border border-gold-500/30 px-4 py-2 rounded-xl text-xs font-cinzel font-bold tracking-wider flex items-center gap-2 transition-all"
+            >
+              <GlassWater className="w-4 h-4 text-gold-400" />
+              PEDIR BEBIDA FUERA DE CARTA
+            </button>
+            
+            <button
+              onClick={onOpenStock}
+              className="bg-darkcard hover:bg-gold-900/30 text-gold-400/80 border border-gold-500/20 px-3 py-2 rounded-xl text-xs font-cinzel font-bold tracking-wider flex items-center gap-1.5 transition-all"
+            >
+              <Package className="w-3.5 h-3.5" />
+              GESTIONAR INVENTARIO
+            </button>
+          </div>
         </div>
       </div>
 
@@ -126,41 +165,82 @@ export default function MenuSection({ menu, onSelectDrink, onOpenAddDrink }) {
 
               {/* Grid de Bebidas */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {drinks.map((drink) => (
-                  <div
-                    key={drink.id}
-                    className="gold-frame rounded-2xl p-5 bg-gradient-to-br from-darkcard via-black to-darkcard flex flex-col justify-between hover:border-gold-400 transition-all hover:shadow-lg hover:shadow-gold-500/10 group"
-                  >
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between gap-3">
-                        <h4 className="font-cinzel text-base md:text-lg font-bold text-gold-100 group-hover:text-gold-300 transition-colors uppercase tracking-wider">
-                          {drink.name}
-                        </h4>
+                {drinks.map((drink) => {
+                  const isPopular = mostPopularDrinkName === drink.name;
+                  const isOutOfStock = drink.stock !== undefined && drink.stock <= 0;
 
-                        {drink.badge && (
-                          <span className="text-[9px] uppercase font-bold tracking-widest px-2.5 py-0.5 rounded-full bg-gold-500/10 text-gold-300 border border-gold-500/30">
-                            {drink.badge}
+                  return (
+                    <div
+                      key={drink.id}
+                      className={`gold-frame rounded-2xl p-5 bg-gradient-to-br from-darkcard via-black to-darkcard flex flex-col justify-between transition-all group ${
+                        isOutOfStock ? 'opacity-70 border-rose-500/30' : 'hover:border-gold-400 hover:shadow-lg hover:shadow-gold-500/10'
+                      }`}
+                    >
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between gap-3">
+                          <h4 className="font-cinzel text-base md:text-lg font-bold text-gold-100 group-hover:text-gold-300 transition-colors uppercase tracking-wider">
+                            {drink.name}
+                          </h4>
+
+                          <div className="flex items-center gap-1.5">
+                            {/* Badge POPULAR dinámico (Bebida más pedida) */}
+                            {isPopular && (
+                              <span className="text-[9px] uppercase font-bold tracking-widest px-2.5 py-0.5 rounded-full bg-amber-500 text-slate-950 animate-pulse shadow-md">
+                                POPULAR 🔥
+                              </span>
+                            )}
+
+                            {/* Badge AGOTADO o Badge personalizado */}
+                            {isOutOfStock ? (
+                              <span className="text-[9px] uppercase font-bold tracking-widest px-2.5 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/40">
+                                AGOTADO
+                              </span>
+                            ) : drink.badge && !isPopular ? (
+                              <span className="text-[9px] uppercase font-bold tracking-widest px-2.5 py-0.5 rounded-full bg-gold-500/10 text-gold-300 border border-gold-500/30">
+                                {drink.badge}
+                              </span>
+                            ) : null}
+                          </div>
+                        </div>
+
+                        {/* Descripción/Ingredientes */}
+                        <p className="text-xs text-gold-200/80 font-sans leading-relaxed pt-1.5 border-t border-gold-500/10">
+                          {drink.description}
+                        </p>
+
+                        {/* Indicador de Inventario/Stock */}
+                        <div className="flex items-center justify-between text-[11px] font-mono pt-1 text-gold-500/60">
+                          <span>
+                            {isOutOfStock ? (
+                              <span className="text-rose-400 font-bold flex items-center gap-1">
+                                <AlertCircle className="w-3 h-3 inline" /> Sin inventario disponible
+                              </span>
+                            ) : (
+                              <span className="text-gold-300/80">
+                                Stock: <strong>{drink.stock !== undefined ? drink.stock : 10}</strong> disponibles
+                              </span>
+                            )}
                           </span>
-                        )}
+                        </div>
                       </div>
 
-                      {/* Descripción/Ingredientes */}
-                      <p className="text-xs text-gold-200/80 font-sans leading-relaxed pt-1.5 border-t border-gold-500/10">
-                        {drink.description}
-                      </p>
+                      <div className="pt-4">
+                        <button
+                          onClick={() => onSelectDrink(drink)}
+                          disabled={isOutOfStock}
+                          className={`w-full font-cinzel font-bold text-xs py-2.5 px-4 rounded-xl border transition-all flex items-center justify-center gap-2 tracking-wider shadow-sm ${
+                            isOutOfStock
+                              ? 'bg-rose-950/30 border-rose-500/20 text-rose-400/50 cursor-not-allowed'
+                              : 'bg-darkcard hover:bg-gradient-to-r hover:from-gold-600 hover:to-amber-500 hover:text-slate-950 text-gold-300 border-gold-500/40 hover:border-gold-400'
+                          }`}
+                        >
+                          <Plus className="w-4 h-4" />
+                          {isOutOfStock ? 'BEBIDA AGOTADA' : 'PEDIR ESTA BEBIDA'}
+                        </button>
+                      </div>
                     </div>
-
-                    <div className="pt-4">
-                      <button
-                        onClick={() => onSelectDrink(drink)}
-                        className="w-full bg-darkcard hover:bg-gradient-to-r hover:from-gold-600 hover:to-amber-500 hover:text-slate-950 text-gold-300 font-cinzel font-bold text-xs py-2.5 px-4 rounded-xl border border-gold-500/40 hover:border-gold-400 transition-all flex items-center justify-center gap-2 tracking-wider shadow-sm"
-                      >
-                        <Plus className="w-4 h-4" />
-                        PEDIR ESTA BEBIDA
-                      </button>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
 
             </div>
@@ -168,14 +248,22 @@ export default function MenuSection({ menu, onSelectDrink, onOpenAddDrink }) {
         </div>
       )}
 
-      {/* Botón para agregar bebida */}
-      <div className="text-center pt-4">
+      {/* Acciones inferiores */}
+      <div className="flex flex-wrap items-center justify-center gap-3 pt-4">
+        <button
+          onClick={onOpenTempDrink}
+          className="bg-gold-500/10 hover:bg-gold-500/20 text-gold-300 border border-gold-500/30 px-5 py-3 rounded-2xl font-cinzel text-xs font-bold tracking-wider transition-all flex items-center gap-2"
+        >
+          <GlassWater className="w-4 h-4 text-gold-400" />
+          PEDIR BEBIDA FUERA DE CARTA (TEMPORAL)
+        </button>
+
         <button
           onClick={onOpenAddDrink}
-          className="inline-flex items-center gap-2 bg-darkcard hover:bg-gold-900/40 text-gold-300 border border-gold-500/30 px-5 py-3 rounded-2xl font-cinzel text-xs font-bold tracking-wider transition-all"
+          className="bg-darkcard hover:bg-gold-900/40 text-gold-300 border border-gold-500/30 px-5 py-3 rounded-2xl font-cinzel text-xs font-bold tracking-wider transition-all flex items-center gap-2"
         >
           <Plus className="w-4 h-4 text-gold-400" />
-          AGREGAR OTRA BEBIDA AL MENÚ DE MEETINGS GERMAN
+          AGREGAR NUEVA BEBIDA AL MENÚ
         </button>
       </div>
     </section>

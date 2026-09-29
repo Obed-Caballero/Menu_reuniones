@@ -4,6 +4,8 @@ import MenuSection from './components/MenuSection';
 import OrdersList from './components/OrdersList';
 import OrderModal from './components/OrderModal';
 import AddDrinkModal from './components/AddDrinkModal';
+import TempDrinkModal from './components/TempDrinkModal';
+import StockModal from './components/StockModal';
 import { Wine } from 'lucide-react';
 
 export default function App() {
@@ -12,6 +14,8 @@ export default function App() {
   const [orders, setOrders] = useState([]);
   const [selectedDrink, setSelectedDrink] = useState(null);
   const [isAddDrinkOpen, setIsAddDrinkOpen] = useState(false);
+  const [isTempDrinkOpen, setIsTempDrinkOpen] = useState(false);
+  const [isStockOpen, setIsStockOpen] = useState(false);
   const [loading, setLoading] = useState(true);
 
   // Cargar menú y pedidos
@@ -54,7 +58,7 @@ export default function App() {
     return () => clearInterval(interval);
   }, []);
 
-  // Crear Pedido (Cualquier amigo)
+  // Crear Pedido (Descuenta stock si pertenece al menú)
   const handleCreateOrder = async (orderData) => {
     try {
       const res = await fetch('/api/orders', {
@@ -62,10 +66,13 @@ export default function App() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(orderData)
       });
-      if (res.ok) {
-        await fetchOrders();
-        setActiveTab('orders');
+      const data = await res.json();
+      if (!res.ok) {
+        alert(data.error || 'No se pudo procesar el pedido.');
+        return;
       }
+      await Promise.all([fetchOrders(), fetchMenu()]);
+      setActiveTab('orders');
     } catch (err) {
       console.error('Error enviando pedido:', err);
     }
@@ -87,6 +94,26 @@ export default function App() {
       return { success: true };
     } catch (err) {
       console.error('Error agregando bebida:', err);
+      return { error: 'Error de conexión con el servidor.' };
+    }
+  };
+
+  // Actualizar Inventario/Stock en Lote (Protegido por Contraseña Admin)
+  const handleUpdateStock = async (stocks, adminPassword) => {
+    try {
+      const res = await fetch('/api/menu/stock/batch', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ stocks, adminPassword })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        return { error: data.error || 'Error al actualizar inventario.' };
+      }
+      await fetchMenu();
+      return { success: true };
+    } catch (err) {
+      console.error('Error actualizando stock:', err);
       return { error: 'Error de conexión con el servidor.' };
     }
   };
@@ -144,6 +171,8 @@ export default function App() {
         setActiveTab={setActiveTab}
         ordersCount={orders.length}
         onOpenAddDrink={() => setIsAddDrinkOpen(true)}
+        onOpenTempDrink={() => setIsTempDrinkOpen(true)}
+        onOpenStock={() => setIsStockOpen(true)}
       />
 
       {/* Contenido Principal */}
@@ -158,8 +187,11 @@ export default function App() {
         ) : activeTab === 'menu' ? (
           <MenuSection
             menu={menu}
+            orders={orders}
             onSelectDrink={(drink) => setSelectedDrink(drink)}
             onOpenAddDrink={() => setIsAddDrinkOpen(true)}
+            onOpenTempDrink={() => setIsTempDrinkOpen(true)}
+            onOpenStock={() => setIsStockOpen(true)}
           />
         ) : (
           <OrdersList
@@ -171,7 +203,7 @@ export default function App() {
         )}
       </main>
 
-      {/* Modal para Hacer Pedido */}
+      {/* Modal para Hacer Pedido de Carta */}
       {selectedDrink && (
         <OrderModal
           drink={selectedDrink}
@@ -180,11 +212,28 @@ export default function App() {
         />
       )}
 
-      {/* Modal para Agregar Nueva Bebida (Con Contraseña) */}
+      {/* Modal para Pedir Bebida Temporal / Fuera de Carta */}
+      {isTempDrinkOpen && (
+        <TempDrinkModal
+          onClose={() => setIsTempDrinkOpen(false)}
+          onSubmitTempOrder={handleCreateOrder}
+        />
+      )}
+
+      {/* Modal para Agregar Nueva Bebida Permanente (Con Contraseña) */}
       {isAddDrinkOpen && (
         <AddDrinkModal
           onClose={() => setIsAddDrinkOpen(false)}
           onAddDrink={handleAddDrink}
+        />
+      )}
+
+      {/* Modal para Gestionar Inventario/Stock (Con Contraseña) */}
+      {isStockOpen && (
+        <StockModal
+          menu={menu}
+          onClose={() => setIsStockOpen(false)}
+          onUpdateStock={handleUpdateStock}
         />
       )}
 

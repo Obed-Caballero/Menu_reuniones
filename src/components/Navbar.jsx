@@ -1,7 +1,7 @@
 import React from 'react';
-import { Wine, Users, PlusCircle } from 'lucide-react';
+import { Wine, Users, PlusCircle, Package, GlassWater } from 'lucide-react';
 
-export default function Navbar({ activeTab, setActiveTab, ordersCount, onOpenAddDrink }) {
+export default function Navbar({ activeTab, setActiveTab, ordersCount, onOpenAddDrink, onOpenTempDrink, onOpenStock }) {
   return (
     <header className="sticky top-0 z-30 bg-black/90 backdrop-blur border-b border-gold-500/30 shadow-2xl">
       {/* Top Accent Line */}
@@ -60,14 +60,37 @@ export default function Navbar({ activeTab, setActiveTab, ordersCount, onOpenAdd
           </button>
         </div>
 
-        {/* Add custom drink button */}
-        <button
-          onClick={onOpenAddDrink}
-          className="hidden md:flex items-center gap-2 bg-darkcard hover:bg-gold-900/40 text-gold-300 border border-gold-500/40 px-3.5 py-2 rounded-xl font-cinzel text-xs font-bold tracking-wider transition-all hover:border-gold-400"
-        >
-          <PlusCircle className="w-4 h-4 text-gold-400" />
-          NUEVA BEBIDA
-        </button>
+        {/* Acciones Adicionales */}
+        <div className="flex items-center gap-2">
+          {/* Botón Bebida Temporal */}
+          <button
+            onClick={onOpenTempDrink}
+            title="Pedir una bebida que no está en el menú"
+            className="flex items-center gap-1.5 bg-darkcard hover:bg-gold-900/40 text-gold-300 border border-gold-500/30 px-3 py-2 rounded-xl font-cinzel text-xs font-bold tracking-wider transition-all"
+          >
+            <GlassWater className="w-4 h-4 text-gold-400" />
+            <span className="hidden sm:inline">BEBIDA TEMPORAL</span>
+          </button>
+
+          {/* Botón Inventario (Admin) */}
+          <button
+            onClick={onOpenStock}
+            title="Gestionar el inventario de bebidas (Admin)"
+            className="flex items-center gap-1.5 bg-darkcard hover:bg-gold-900/40 text-gold-300 border border-gold-500/30 px-3 py-2 rounded-xl font-cinzel text-xs font-bold tracking-wider transition-all"
+          >
+            <Package className="w-4 h-4 text-gold-400" />
+            <span className="hidden sm:inline">INVENTARIO</span>
+          </button>
+
+          {/* Agregar nueva bebida */}
+          <button
+            onClick={onOpenAddDrink}
+            className="hidden md:flex items-center gap-1.5 bg-darkcard hover:bg-gold-900/40 text-gold-300 border border-gold-500/40 px-3 py-2 rounded-xl font-cinzel text-xs font-bold tracking-wider transition-all hover:border-gold-400"
+          >
+            <PlusCircle className="w-4 h-4 text-gold-400" />
+            NUEVA BEBIDA
+          </button>
+        </div>
 
       </div>
     </header>
