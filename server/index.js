@@ -15,7 +15,7 @@ const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
 app.use(cors());
 app.use(express.json());
 
-// Menú completo con control de inventario (stock por defecto: 10)
+// Menú de bebidas preparadas
 const initialMenu = [
   // TEQUILA
   {
@@ -23,6 +23,7 @@ const initialMenu = [
     name: 'Paloma',
     category: 'Tequila',
     description: 'Paloma Clásica - Jose Cuervo Tradicional + Limón + Squirt',
+    badge: 'Popular',
     stock: 10
   },
   {
@@ -149,9 +150,40 @@ const initialMenu = [
   }
 ];
 
+// Inventario de Insumos y Botellas de la Barra de German
+const initialSupplies = [
+  // LICORES Y BOTELLAS
+  { id: 's1', name: 'Jose Cuervo Tradicional', category: 'Licores', quantity: '3 Botellas', status: 'Disponible' },
+  { id: 's2', name: 'Mezcal Montelobos', category: 'Licores', quantity: '2 Botellas', status: 'Disponible' },
+  { id: 's3', name: "Buchanan's de Piña", category: 'Licores', quantity: '2 Botellas', status: 'Disponible' },
+  { id: 's4', name: 'Smirnoff Tamarindo', category: 'Licores', quantity: '2 Botellas', status: 'Disponible' },
+  { id: 's5', name: 'Don Q Ron Blanco', category: 'Licores', quantity: '2 Botellas', status: 'Disponible' },
+  { id: 's6', name: 'Empress 1908 Indigo Gin', category: 'Licores', quantity: '1 Botella', status: 'Poco' },
+  { id: 's7', name: 'Jose Cuervo Fresa Picosa', category: 'Licores', quantity: '1 Botella', status: 'Disponible' },
+  { id: 's8', name: 'Licor de Naranja / Toronja', category: 'Licores', quantity: '2 Botellas', status: 'Disponible' },
+
+  // MEZCLADORES Y REFRESCOS
+  { id: 's9', name: 'Refresco Squirt', category: 'Mezcladores', quantity: '12 Latas', status: 'Disponible' },
+  { id: 's10', name: 'Peñafiel de Piña', category: 'Mezcladores', quantity: '8 Botellas', status: 'Disponible' },
+  { id: 's11', name: 'Monster Mango / Fresa', category: 'Mezcladores', quantity: '6 Latas', status: 'Poco' },
+  { id: 's12', name: 'Agua Mineral / Soda', category: 'Mezcladores', quantity: '10 Botellas', status: 'Disponible' },
+
+  // JUGOS Y FRUTAS
+  { id: 's13', name: 'Limón Fresco', category: 'Jugos & Frutas', quantity: '3 kg', status: 'Disponible' },
+  { id: 's14', name: 'Jugo de Piña & Naranja', category: 'Jugos & Frutas', quantity: '4 Litros', status: 'Disponible' },
+  { id: 's15', name: 'Jugo de Arándano & Lichi', category: 'Jugos & Frutas', quantity: '2 Litros', status: 'Disponible' },
+  { id: 's16', name: 'Agua de Jamaica Concentrada', category: 'Jugos & Frutas', quantity: '2 Litros', status: 'Disponible' },
+
+  // COMPLEMENTOS E INSUMOS
+  { id: 's17', name: 'Chamoy & Jarabe de Sandía', category: 'Complementos', quantity: '2 Frascos', status: 'Disponible' },
+  { id: 's18', name: 'Crema de Coco', category: 'Complementos', quantity: '3 Latas', status: 'Disponible' },
+  { id: 's19', name: 'Hielo Picado / Bolsas', category: 'Complementos', quantity: '3 Bolsas', status: 'Disponible' },
+  { id: 's20', name: 'Menta / Hierbabuena Fresca', category: 'Complementos', quantity: '1 Manojo', status: 'Disponible' }
+];
+
 function loadData() {
   if (!fs.existsSync(DATA_FILE)) {
-    const initialData = { menu: initialMenu, orders: [] };
+    const initialData = { menu: initialMenu, orders: [], supplies: initialSupplies };
     fs.writeFileSync(DATA_FILE, JSON.stringify(initialData, null, 2));
     return initialData;
   }
@@ -161,25 +193,15 @@ function loadData() {
     
     if (!parsed.menu || !Array.isArray(parsed.menu) || parsed.menu.length === 0) {
       parsed.menu = initialMenu;
-      fs.writeFileSync(DATA_FILE, JSON.stringify(parsed, null, 2));
-    } else {
-      // Asegurar propiedad stock en bebidas existentes
-      let updated = false;
-      parsed.menu.forEach(drink => {
-        if (drink.stock === undefined || drink.stock === null) {
-          drink.stock = 10;
-          updated = true;
-        }
-      });
-      if (updated) {
-        fs.writeFileSync(DATA_FILE, JSON.stringify(parsed, null, 2));
-      }
+    }
+    if (!parsed.supplies || !Array.isArray(parsed.supplies) || parsed.supplies.length === 0) {
+      parsed.supplies = initialSupplies;
     }
     
     return parsed;
   } catch (err) {
     console.error('Error leyendo data.json, reseteando:', err);
-    const fallback = { menu: initialMenu, orders: [] };
+    const fallback = { menu: initialMenu, orders: [], supplies: initialSupplies };
     fs.writeFileSync(DATA_FILE, JSON.stringify(fallback, null, 2));
     return fallback;
   }
@@ -204,12 +226,83 @@ app.get('/api/menu', (req, res) => {
   res.json(data.menu);
 });
 
-// Restaurar menú original a los 16 cócteles iniciales
+// Obtener Insumos y Botellas de la Barra
+app.get('/api/supplies', (req, res) => {
+  const data = loadData();
+  res.json(data.supplies || []);
+});
+
+// Agregar Insumo/Botella al Inventario de la Barra (Protegido por Admin)
+app.post('/api/supplies', (req, res) => {
+  const { name, category, quantity, status, adminPassword } = req.body;
+
+  if (adminPassword !== ADMIN_PASSWORD) {
+    return res.status(401).json({ error: 'Contraseña de administrador incorrecta.' });
+  }
+
+  if (!name) {
+    return res.status(400).json({ error: 'El nombre del insumo o botella es obligatorio.' });
+  }
+
+  const data = loadData();
+  const newSupply = {
+    id: 's_' + Date.now(),
+    name: name.trim(),
+    category: category || 'Licores',
+    quantity: quantity || '1 Unidad',
+    status: status || 'Disponible'
+  };
+
+  if (!data.supplies) data.supplies = [];
+  data.supplies.unshift(newSupply);
+  saveData(data);
+  res.status(201).json(newSupply);
+});
+
+// Actualizar Insumo/Botella (Protegido por Admin)
+app.put('/api/supplies/:id', (req, res) => {
+  const { id } = req.params;
+  const { quantity, status, adminPassword } = req.body;
+
+  if (adminPassword !== ADMIN_PASSWORD) {
+    return res.status(401).json({ error: 'Contraseña de administrador incorrecta.' });
+  }
+
+  const data = loadData();
+  const supply = (data.supplies || []).find(s => s.id === id);
+  if (!supply) {
+    return res.status(404).json({ error: 'Insumo no encontrado.' });
+  }
+
+  if (quantity !== undefined) supply.quantity = quantity;
+  if (status !== undefined) supply.status = status;
+
+  saveData(data);
+  res.json({ success: true, supply });
+});
+
+// Eliminar Insumo (Protegido por Admin)
+app.delete('/api/supplies/:id', (req, res) => {
+  const { id } = req.params;
+  const adminPassword = req.headers['x-admin-password'] || req.body.adminPassword || req.query.adminPassword;
+
+  if (adminPassword !== ADMIN_PASSWORD) {
+    return res.status(401).json({ error: 'Contraseña de administrador incorrecta.' });
+  }
+
+  const data = loadData();
+  data.supplies = (data.supplies || []).filter(s => s.id !== id);
+  saveData(data);
+  res.json({ success: true, message: 'Insumo eliminado.' });
+});
+
+// Restaurar menú original
 app.post('/api/menu/reset', (req, res) => {
   const data = loadData();
   data.menu = initialMenu;
+  data.supplies = initialSupplies;
   saveData(data);
-  res.json({ success: true, menu: initialMenu });
+  res.json({ success: true, menu: initialMenu, supplies: initialSupplies });
 });
 
 // Agregar nueva bebida al menú (Protegido por Contraseña)
@@ -217,7 +310,7 @@ app.post('/api/menu', (req, res) => {
   const { name, category, description, stock, adminPassword } = req.body;
 
   if (adminPassword !== ADMIN_PASSWORD) {
-    return res.status(401).json({ error: 'Contraseña de administrador incorrecta. Solo German puede agregar bebidas.' });
+    return res.status(401).json({ error: 'Contraseña de administrador incorrecta.' });
   }
 
   if (!name) {
@@ -238,7 +331,7 @@ app.post('/api/menu', (req, res) => {
   res.status(201).json(newItem);
 });
 
-// Modificar Inventario/Stock de una bebida (Protegido por Contraseña Admin)
+// Modificar Inventario/Stock de una bebida
 app.put('/api/menu/:id/stock', (req, res) => {
   const { id } = req.params;
   const { stock, adminPassword } = req.body;
@@ -248,7 +341,7 @@ app.put('/api/menu/:id/stock', (req, res) => {
   }
 
   if (typeof stock !== 'number' || stock < 0) {
-    return res.status(400).json({ error: 'Ingresa una cantidad de inventario válida.' });
+    return res.status(400).json({ error: 'Ingresa una cantidad válida.' });
   }
 
   const data = loadData();
@@ -262,9 +355,9 @@ app.put('/api/menu/:id/stock', (req, res) => {
   res.json({ success: true, drink });
 });
 
-// Actualizar inventario en lote (Protegido por Contraseña Admin)
+// Actualizar inventario en lote
 app.put('/api/menu/stock/batch', (req, res) => {
-  const { stocks, adminPassword } = req.body; // stocks = { [drinkId]: number }
+  const { stocks, adminPassword } = req.body;
 
   if (adminPassword !== ADMIN_PASSWORD) {
     return res.status(401).json({ error: 'Contraseña de administrador incorrecta.' });
@@ -287,7 +380,7 @@ app.get('/api/orders', (req, res) => {
   res.json(data.orders);
 });
 
-// Crear nuevo pedido (Descuenta stock de la bebida correspondiente si no es temporal)
+// Crear nuevo pedido
 app.post('/api/orders', (req, res) => {
   const { friendName, drinkName, notes, isTemporary } = req.body;
 
@@ -297,7 +390,6 @@ app.post('/api/orders', (req, res) => {
 
   const data = loadData();
 
-  // Si NO es una bebida temporal, verificar y descontar stock
   if (!isTemporary) {
     const drink = data.menu.find(d => d.name.toLowerCase() === drinkName.trim().toLowerCase());
     if (drink) {
@@ -322,13 +414,13 @@ app.post('/api/orders', (req, res) => {
   res.status(201).json(newOrder);
 });
 
-// Eliminar un pedido individual (Protegido por Contraseña)
+// Eliminar un pedido individual
 app.delete('/api/orders/:id', (req, res) => {
   const { id } = req.params;
   const adminPassword = req.headers['x-admin-password'] || req.body.adminPassword || req.query.adminPassword;
 
   if (adminPassword !== ADMIN_PASSWORD) {
-    return res.status(401).json({ error: 'Contraseña de bartender incorrecta. Solo German puede marcar pedidos como servidos.' });
+    return res.status(401).json({ error: 'Contraseña de bartender incorrecta.' });
   }
 
   const data = loadData();
@@ -337,12 +429,12 @@ app.delete('/api/orders/:id', (req, res) => {
   res.json({ success: true, message: 'Pedido eliminado.' });
 });
 
-// Reiniciar todos los pedidos de la reunión (Protegido por Contraseña)
+// Reiniciar todos los pedidos de la reunión
 app.delete('/api/orders', (req, res) => {
   const adminPassword = req.headers['x-admin-password'] || req.body.adminPassword || req.query.adminPassword;
 
   if (adminPassword !== ADMIN_PASSWORD) {
-    return res.status(401).json({ error: 'Contraseña de bartender incorrecta. Solo German puede reiniciar la lista.' });
+    return res.status(401).json({ error: 'Contraseña de bartender incorrecta.' });
   }
 
   const data = loadData();
@@ -351,7 +443,7 @@ app.delete('/api/orders', (req, res) => {
   res.json({ success: true, message: 'Todos los pedidos han sido borrados.' });
 });
 
-// Servir frontend compilado de React (dist) en el mismo puerto 5000
+// Servir frontend compilado de React (dist)
 const distPath = path.join(__dirname, '../dist');
 if (fs.existsSync(distPath)) {
   app.use(express.static(distPath));
