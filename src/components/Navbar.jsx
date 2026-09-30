@@ -1,5 +1,5 @@
 import React from 'react';
-import { Wine, Users, GlassWater } from 'lucide-react';
+import { Wine, Users, GlassWater, Lock, ShieldCheck } from 'lucide-react';
 
 export default function Navbar({ activeTab, setActiveTab, ordersCount, onOpenTempDrink }) {
   return (
@@ -9,7 +9,7 @@ export default function Navbar({ activeTab, setActiveTab, ordersCount, onOpenTem
 
       <div className="max-w-6xl mx-auto px-4 py-3.5 flex flex-wrap items-center justify-between gap-4">
         
-        {/* Logo and Branding: MEETINGS GERMAN */}
+        {/* Logo y Nombre: MEETINGS GERMAN */}
         <div className="flex items-center gap-3">
           <div className="bg-gradient-to-b from-amber-400 to-gold-600 p-2.5 rounded-xl shadow-lg shadow-gold-500/20 text-slate-950 font-bold border border-gold-300/40">
             <Wine className="w-6 h-6" />
@@ -24,11 +24,11 @@ export default function Navbar({ activeTab, setActiveTab, ordersCount, onOpenTem
           </div>
         </div>
 
-        {/* Navigation Tabs */}
+        {/* Pestañas de Navegación */}
         <div className="flex items-center gap-1.5 bg-darkcard/90 p-1.5 rounded-xl border border-gold-500/30 overflow-x-auto scrollbar-none">
           <button
             onClick={() => setActiveTab('menu')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-cinzel text-xs font-bold tracking-wider transition-all whitespace-nowrap ${
+            className={`flex items-center gap-2 px-3.5 py-2 rounded-lg font-cinzel text-xs font-bold tracking-wider transition-all whitespace-nowrap ${
               activeTab === 'menu'
                 ? 'bg-gradient-to-r from-gold-600 via-gold-500 to-amber-500 text-slate-950 shadow-lg'
                 : 'text-gold-200/70 hover:text-gold-300 hover:bg-gold-900/30'
@@ -40,7 +40,7 @@ export default function Navbar({ activeTab, setActiveTab, ordersCount, onOpenTem
 
           <button
             onClick={() => setActiveTab('orders')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-cinzel text-xs font-bold tracking-wider transition-all relative whitespace-nowrap ${
+            className={`flex items-center gap-2 px-3.5 py-2 rounded-lg font-cinzel text-xs font-bold tracking-wider transition-all relative whitespace-nowrap ${
               activeTab === 'orders'
                 ? 'bg-gradient-to-r from-gold-600 via-gold-500 to-amber-500 text-slate-950 shadow-lg'
                 : 'text-gold-200/70 hover:text-gold-300 hover:bg-gold-900/30'
@@ -57,6 +57,19 @@ export default function Navbar({ activeTab, setActiveTab, ordersCount, onOpenTem
                 {ordersCount}
               </span>
             )}
+          </button>
+
+          {/* Pestaña del Bartender */}
+          <button
+            onClick={() => setActiveTab('bartender')}
+            className={`flex items-center gap-2 px-3.5 py-2 rounded-lg font-cinzel text-xs font-bold tracking-wider transition-all whitespace-nowrap ${
+              activeTab === 'bartender'
+                ? 'bg-gradient-to-r from-amber-500 via-gold-500 to-amber-600 text-slate-950 shadow-lg font-extrabold'
+                : 'text-amber-300/80 hover:text-amber-200 hover:bg-amber-950/30'
+            }`}
+          >
+            <ShieldCheck className="w-4 h-4 text-amber-400" />
+            PANEL BARTENDER
           </button>
         </div>
 

@@ -113,13 +113,16 @@ export default function OrdersList({ orders, onDeleteOrder, onClearAllOrders, on
               <Clock className="w-3.5 h-3.5 text-gold-400" /> ORDENES RECIBIDAS
             </h3>
 
-            {orders.map((order) => (
+            {orders.map((order, index) => (
               <div
                 key={order.id}
                 className="gold-frame rounded-2xl p-4 bg-darkcard flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transition-all"
               >
                 <div className="space-y-1.5">
                   <div className="flex items-center gap-2">
+                    <span className="bg-gradient-to-r from-gold-600 to-amber-500 text-slate-950 text-xs font-extrabold px-2 py-0.5 rounded-md font-mono">
+                      #{index + 1}
+                    </span>
                     <span className="bg-gold-500/10 text-gold-300 border border-gold-500/30 text-xs font-bold px-2.5 py-0.5 rounded-lg font-sans">
                       {order.friendName}
                     </span>

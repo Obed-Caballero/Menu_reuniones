@@ -2,14 +2,16 @@ import React, { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import MenuSection from './components/MenuSection';
 import OrdersList from './components/OrdersList';
+import BartenderTab from './components/BartenderTab';
 import OrderModal from './components/OrderModal';
 import AddDrinkModal from './components/AddDrinkModal';
 import TempDrinkModal from './components/TempDrinkModal';
 import { Wine } from 'lucide-react';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState('menu'); // 'menu' | 'orders'
+  const [activeTab, setActiveTab] = useState('menu'); // 'menu' | 'orders' | 'bartender'
   const [menu, setMenu] = useState([]);
+  const [supplies, setSupplies] = useState([]);
   const [orders, setOrders] = useState([]);
   const [selectedDrink, setSelectedDrink] = useState(null);
   
@@ -18,7 +20,7 @@ export default function App() {
   const [isTempDrinkOpen, setIsTempDrinkOpen] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // Cargar menú y pedidos
+  // Cargar menú, insumos extra y pedidos
   const fetchMenu = async () => {
     try {
       const res = await fetch('/api/menu');
@@ -28,6 +30,18 @@ export default function App() {
       }
     } catch (err) {
       console.error('Error cargando menú:', err);
+    }
+  };
+
+  const fetchSupplies = async () => {
+    try {
+      const res = await fetch('/api/supplies');
+      if (res.ok) {
+        const data = await res.json();
+        setSupplies(data);
+      }
+    } catch (err) {
+      console.error('Error cargando insumos:', err);
     }
   };
 
@@ -45,7 +59,7 @@ export default function App() {
 
   useEffect(() => {
     const init = async () => {
-      await Promise.all([fetchMenu(), fetchOrders()]);
+      await Promise.all([fetchMenu(), fetchSupplies(), fetchOrders()]);
       setLoading(false);
     };
     init();
@@ -53,6 +67,8 @@ export default function App() {
     // Polling en tiempo real cada 3 segundos
     const interval = setInterval(() => {
       fetchOrders();
+      fetchMenu();
+      fetchSupplies();
     }, 3000);
 
     return () => clearInterval(interval);
@@ -95,6 +111,123 @@ export default function App() {
     } catch (err) {
       console.error('Error agregando bebida:', err);
       return { error: 'Error de conexión con el servidor.' };
+    }
+  };
+
+  // Activar / Desactivar Bebida (Bartender)
+  const handleToggleDrink = async (drinkId, adminPassword) => {
+    try {
+      const res = await fetch(`/api/menu/${drinkId}/toggle`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ adminPassword })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        alert(data.error || 'Error al cambiar estado de bebida.');
+        return;
+      }
+      await fetchMenu();
+    } catch (err) {
+      console.error('Error alternando bebida:', err);
+    }
+  };
+
+  // Modificar Stock Numérico (Bartender)
+  const handleUpdateStock = async (drinkId, stockData) => {
+    try {
+      const res = await fetch(`/api/menu/${drinkId}/stock`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(stockData)
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        alert(data.error || 'Error al modificar existencias.');
+        return;
+      }
+      await fetchMenu();
+    } catch (err) {
+      console.error('Error actualizando stock:', err);
+    }
+  };
+
+  // Restablecer Inventario Completo (Bartender)
+  const handleResetInventory = async (adminPassword) => {
+    try {
+      const res = await fetch('/api/menu/reset-inventory', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ adminPassword })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        alert(data.error || 'Error al restablecer inventario.');
+        return;
+      }
+      await fetchMenu();
+    } catch (err) {
+      console.error('Error restableciendo inventario:', err);
+    }
+  };
+
+  // Agregar Insumo / Botella Extra (Bartender)
+  const handleAddSupply = async (supplyData) => {
+    try {
+      const res = await fetch('/api/supplies', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(supplyData)
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        return { error: data.error || 'Error al agregar insumo.' };
+      }
+      await fetchSupplies();
+      return { success: true };
+    } catch (err) {
+      console.error('Error agregando insumo:', err);
+      return { error: 'Error de conexión con el servidor.' };
+    }
+  };
+
+  // Actualizar Insumo Extra (Bartender)
+  const handleUpdateSupply = async (supplyId, updateData) => {
+    try {
+      const res = await fetch(`/api/supplies/${supplyId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updateData)
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        alert(data.error || 'Error al actualizar insumo.');
+        return;
+      }
+      await fetchSupplies();
+    } catch (err) {
+      console.error('Error actualizando insumo:', err);
+    }
+  };
+
+  // Eliminar Insumo Extra (Bartender)
+  const handleDeleteSupply = async (supplyId, adminPassword) => {
+    try {
+      const res = await fetch(`/api/supplies/${supplyId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-password': adminPassword
+        }
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        alert(data.error || 'Error al eliminar insumo.');
+        return;
+      }
+      await fetchSupplies();
+    } catch (err) {
+      console.error('Error eliminando insumo:', err);
     }
   };
 
@@ -166,17 +299,30 @@ export default function App() {
         ) : activeTab === 'menu' ? (
           <MenuSection
             menu={menu}
+            supplies={supplies}
             orders={orders}
             onSelectDrink={(drink) => setSelectedDrink(drink)}
             onOpenAddDrink={() => setIsAddDrinkOpen(true)}
             onOpenTempDrink={() => setIsTempDrinkOpen(true)}
+            onGoToBartender={() => setActiveTab('bartender')}
           />
-        ) : (
+        ) : activeTab === 'orders' ? (
           <OrdersList
             orders={orders}
             onDeleteOrder={handleDeleteOrder}
             onClearAllOrders={handleClearAllOrders}
             onGoToMenu={() => setActiveTab('menu')}
+          />
+        ) : (
+          <BartenderTab
+            menu={menu}
+            supplies={supplies}
+            onToggleDrink={handleToggleDrink}
+            onUpdateStock={handleUpdateStock}
+            onResetInventory={handleResetInventory}
+            onAddSupply={handleAddSupply}
+            onUpdateSupply={handleUpdateSupply}
+            onDeleteSupply={handleDeleteSupply}
           />
         )}
       </main>

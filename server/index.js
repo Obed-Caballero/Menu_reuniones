@@ -23,39 +23,57 @@ const initialMenu = [
     name: 'Paloma',
     category: 'Tequila',
     description: 'Paloma Clásica - Jose Cuervo Tradicional + Limón + Squirt',
-    badge: 'Popular'
+    badge: 'Popular',
+    active: true,
+    hasStockLimit: false,
+    stock: null
   },
   {
     id: '2',
     name: 'Como la Flor',
     category: 'Tequila',
     description: 'Bebida de Jamaica - Jose Cuervo Tradicional + Licor de Naranja + Limón + Jamaica',
-    badge: 'Especial'
+    badge: 'Especial',
+    active: true,
+    hasStockLimit: false,
+    stock: null
   },
   {
     id: '3',
     name: 'Margarita',
     category: 'Tequila',
-    description: 'Margarita Clásica - Jose Cuervo Tradicional + Licor de Naranja + Limón Amarillo'
+    description: 'Margarita Clásica - Jose Cuervo Tradicional + Licor de Naranja + Limón Amarillo',
+    active: true,
+    hasStockLimit: false,
+    stock: null
   },
   {
     id: '4',
     name: 'Bandida',
     category: 'Tequila',
     description: 'Paloma Cítrica - 1800 Pepino Jalapeño + Licor de Toronja + Jugo de Toronja + Limón + Squirt',
-    badge: 'Picosito'
+    badge: 'Picosito',
+    active: true,
+    hasStockLimit: false,
+    stock: null
   },
   {
     id: '5',
     name: 'Tropitangy',
     category: 'Tequila',
-    description: 'Bebida de Naranja con Tamarindo - Gran Malo Tamarindo + Licor de Naranja + Jugo de Naranja + Jumex de Piña + Limón'
+    description: 'Bebida de Naranja con Tamarindo - Gran Malo Tamarindo + Licor de Naranja + Jugo de Naranja + Jumex de Piña + Limón',
+    active: true,
+    hasStockLimit: false,
+    stock: null
   },
   {
     id: '6',
     name: 'Picafiestas',
     category: 'Tequila',
-    description: 'Bebida de PicaFresa - Jose Cuervo Fresa Picosa + Monster de Fresa + Limón'
+    description: 'Bebida de PicaFresa - Jose Cuervo Fresa Picosa + Monster de Fresa + Limón',
+    active: true,
+    hasStockLimit: false,
+    stock: null
   },
 
   // MEZCAL
@@ -64,7 +82,10 @@ const initialMenu = [
     name: 'Como la Flor Mezcal',
     category: 'Mezcal',
     description: 'Bebida de Jamaica - Mezcal Montelobos + Licor de Naranja + Limón + Jamaica',
-    badge: 'Artesanal'
+    badge: 'Artesanal',
+    active: true,
+    hasStockLimit: false,
+    stock: null
   },
 
   // WHISKEY
@@ -73,7 +94,10 @@ const initialMenu = [
     name: 'Piñática',
     category: 'Whiskey',
     description: "Bebida de Piña con Toque de Mango - Buchanan's de Piña + Monster de Mango + Limón + Peñafiel de Piña",
-    badge: 'Top Fiesta'
+    badge: 'Top Fiesta',
+    active: true,
+    hasStockLimit: false,
+    stock: null
   },
 
   // VODKA
@@ -81,20 +105,29 @@ const initialMenu = [
     id: '9',
     name: 'Cosmopolitan',
     category: 'Vodka',
-    description: 'Martini de Arándano - Oso Negro + Licor de Naranja + Limón + Jugo de Arándano'
+    description: 'Martini de Arándano - Oso Negro + Licor de Naranja + Limón + Jugo de Arándano',
+    active: true,
+    hasStockLimit: false,
+    stock: null
   },
   {
     id: '10',
     name: 'Tamaloco',
     category: 'Vodka',
     description: 'Bebida de Mango con Tamarindo - Smirnoff Tamarindo + Licor de Mango + Monster de Mango + Limón + Peñafiel de Piña',
-    badge: 'Recomendado'
+    badge: 'Recomendado',
+    active: true,
+    hasStockLimit: false,
+    stock: null
   },
   {
     id: '11',
     name: 'Chamoy & Chill',
     category: 'Vodka',
-    description: 'Bebida de Sandía con Chamoy - Stoli Chamoy + Jarabe de Sandía + Limón Amarillo + Granadina'
+    description: 'Bebida de Sandía con Chamoy - Stoli Chamoy + Jarabe de Sandía + Limón Amarillo + Granadina',
+    active: true,
+    hasStockLimit: false,
+    stock: null
   },
 
   // GINEBRA
@@ -103,13 +136,19 @@ const initialMenu = [
     name: 'Emperatriz',
     category: 'Ginebra',
     description: 'Paloma de Tres Licores - Empress 1908 Indigo + Licor de Toronja + Mezcal Montelobos + Limón + Squirt',
-    badge: 'Premium'
+    badge: 'Premium',
+    active: true,
+    hasStockLimit: false,
+    stock: null
   },
   {
     id: '13',
     name: 'Gin-Lichi',
     category: 'Ginebra',
-    description: 'Martini de Lichi - Empress 1908 Indigo + Limón + Jugo de Lichi + Crema de Lichi'
+    description: 'Martini de Lichi - Empress 1908 Indigo + Limón + Jugo de Lichi + Crema de Lichi',
+    active: true,
+    hasStockLimit: false,
+    stock: null
   },
 
   // RON
@@ -117,26 +156,44 @@ const initialMenu = [
     id: '14',
     name: 'Piña Colada',
     category: 'Ron',
-    description: 'Piña Colada Clásica - Don Q + Crema de Coco + Limón + Jugo de Piña'
+    description: 'Piña Colada Clásica - Don Q + Crema de Coco + Limón + Jugo de Piña',
+    active: true,
+    hasStockLimit: false,
+    stock: null
   },
   {
     id: '15',
     name: 'Mojito Clásico',
     category: 'Ron',
     description: 'Mojito de Mango o Sandía - Don Q + Jarabe de Mango/Sandía + Limón + Menta',
-    badge: 'Refrescante'
+    badge: 'Refrescante',
+    active: true,
+    hasStockLimit: false,
+    stock: null
   },
   {
     id: '16',
     name: 'Blue Hawaian',
     category: 'Ron',
-    description: 'Variante de Piña Colada - Don Q + Crema de Coco + Limón + Jugo de Piña + Blue Curacao'
+    description: 'Variante de Piña Colada - Don Q + Crema de Coco + Limón + Jugo de Piña + Blue Curacao',
+    active: true,
+    hasStockLimit: false,
+    stock: null
   }
+];
+
+// Insumos y botellas extra que el bartender agrega al inventario libre
+const initialSupplies = [
+  { id: 's1', name: 'Jose Cuervo Tradicional', category: 'Licores', quantity: '3 Botellas', active: true },
+  { id: 's2', name: 'Mezcal Montelobos', category: 'Licores', quantity: '2 Botellas', active: true },
+  { id: 's3', name: "Buchanan's de Piña", category: 'Licores', quantity: '2 Botellas', active: true },
+  { id: 's4', name: 'Refresco Squirt', category: 'Mezcladores', quantity: '12 Latas', active: true },
+  { id: 's5', name: 'Hielo Picado', category: 'Complementos', quantity: '3 Bolsas', active: true }
 ];
 
 function loadData() {
   if (!fs.existsSync(DATA_FILE)) {
-    const initialData = { menu: initialMenu, orders: [] };
+    const initialData = { menu: initialMenu, orders: [], supplies: initialSupplies };
     fs.writeFileSync(DATA_FILE, JSON.stringify(initialData, null, 2));
     return initialData;
   }
@@ -150,10 +207,30 @@ function loadData() {
     if (!parsed.orders) {
       parsed.orders = [];
     }
+    if (!parsed.supplies) {
+      parsed.supplies = initialSupplies;
+    }
+
+    let updated = false;
+    parsed.menu.forEach(drink => {
+      if (drink.active === undefined) {
+        drink.active = true;
+        updated = true;
+      }
+      if (drink.hasStockLimit === undefined) {
+        drink.hasStockLimit = false;
+        updated = true;
+      }
+    });
+
+    if (updated) {
+      fs.writeFileSync(DATA_FILE, JSON.stringify(parsed, null, 2));
+    }
+
     return parsed;
   } catch (err) {
     console.error('Error leyendo data.json, reseteando:', err);
-    const fallback = { menu: initialMenu, orders: [] };
+    const fallback = { menu: initialMenu, orders: [], supplies: initialSupplies };
     fs.writeFileSync(DATA_FILE, JSON.stringify(fallback, null, 2));
     return fallback;
   }
@@ -178,20 +255,157 @@ app.get('/api/menu', (req, res) => {
   res.json(data.menu);
 });
 
-// Restaurar menú original
-app.post('/api/menu/reset', (req, res) => {
+// Obtener insumos extra de la barra
+app.get('/api/supplies', (req, res) => {
   const data = loadData();
-  data.menu = initialMenu;
-  saveData(data);
-  res.json({ success: true, menu: initialMenu });
+  res.json(data.supplies || []);
 });
 
-// Agregar nueva bebida al menú (Protegido por Contraseña)
+// Agregar insumo/botella extra (Bartender)
+app.post('/api/supplies', (req, res) => {
+  const { name, category, quantity, adminPassword } = req.body;
+
+  if (adminPassword !== ADMIN_PASSWORD) {
+    return res.status(401).json({ error: 'Contraseña de bartender incorrecta.' });
+  }
+
+  if (!name) {
+    return res.status(400).json({ error: 'El nombre del insumo o botella es obligatorio.' });
+  }
+
+  const data = loadData();
+  const newSupply = {
+    id: 's_' + Date.now(),
+    name: name.trim(),
+    category: category || 'Licores',
+    quantity: quantity || 'Disponible',
+    active: true
+  };
+
+  if (!data.supplies) data.supplies = [];
+  data.supplies.unshift(newSupply);
+  saveData(data);
+  res.status(201).json(newSupply);
+});
+
+// Actualizar / Toggle Insumo Extra (Bartender)
+app.put('/api/supplies/:id', (req, res) => {
+  const { id } = req.params;
+  const { quantity, active, adminPassword } = req.body;
+
+  if (adminPassword !== ADMIN_PASSWORD) {
+    return res.status(401).json({ error: 'Contraseña de bartender incorrecta.' });
+  }
+
+  const data = loadData();
+  const supply = (data.supplies || []).find(s => s.id === id);
+
+  if (!supply) {
+    return res.status(404).json({ error: 'Insumo no encontrado.' });
+  }
+
+  if (quantity !== undefined) supply.quantity = quantity;
+  if (active !== undefined) supply.active = active;
+
+  saveData(data);
+  res.json({ success: true, supply });
+});
+
+// Eliminar Insumo Extra (Bartender)
+app.delete('/api/supplies/:id', (req, res) => {
+  const { id } = req.params;
+  const adminPassword = req.headers['x-admin-password'] || req.body.adminPassword || req.query.adminPassword;
+
+  if (adminPassword !== ADMIN_PASSWORD) {
+    return res.status(401).json({ error: 'Contraseña de bartender incorrecta.' });
+  }
+
+  const data = loadData();
+  data.supplies = (data.supplies || []).filter(s => s.id !== id);
+  saveData(data);
+  res.json({ success: true, message: 'Insumo eliminado.' });
+});
+
+// Activar / Desactivar Bebida (Bartender)
+app.put('/api/menu/:id/toggle', (req, res) => {
+  const { id } = req.params;
+  const { adminPassword } = req.body;
+
+  if (adminPassword !== ADMIN_PASSWORD) {
+    return res.status(401).json({ error: 'Contraseña de bartender incorrecta.' });
+  }
+
+  const data = loadData();
+  const drink = data.menu.find(d => d.id === id);
+
+  if (!drink) {
+    return res.status(404).json({ error: 'Bebida no encontrada.' });
+  }
+
+  drink.active = !drink.active;
+  saveData(data);
+  res.json({ success: true, drink });
+});
+
+// Modificar Límite de Stock de una Bebida (Bartender)
+app.put('/api/menu/:id/stock', (req, res) => {
+  const { id } = req.params;
+  const { hasStockLimit, stock, adminPassword } = req.body;
+
+  if (adminPassword !== ADMIN_PASSWORD) {
+    return res.status(401).json({ error: 'Contraseña de bartender incorrecta.' });
+  }
+
+  const data = loadData();
+  const drink = data.menu.find(d => d.id === id);
+
+  if (!drink) {
+    return res.status(404).json({ error: 'Bebida no encontrada.' });
+  }
+
+  if (hasStockLimit !== undefined) {
+    drink.hasStockLimit = !!hasStockLimit;
+    if (!drink.hasStockLimit) {
+      drink.stock = null;
+    } else if (drink.stock === null || drink.stock === undefined) {
+      drink.stock = 10;
+    }
+  }
+
+  if (typeof stock === 'number') {
+    drink.stock = Math.max(0, stock);
+    drink.hasStockLimit = true;
+  }
+
+  saveData(data);
+  res.json({ success: true, drink });
+});
+
+// Restablecer Inventario (Todas activas, sin límite de número por defecto)
+app.post('/api/menu/reset-inventory', (req, res) => {
+  const { adminPassword } = req.body;
+
+  if (adminPassword !== ADMIN_PASSWORD) {
+    return res.status(401).json({ error: 'Contraseña de bartender incorrecta.' });
+  }
+
+  const data = loadData();
+  data.menu.forEach(drink => {
+    drink.active = true;
+    drink.hasStockLimit = false;
+    drink.stock = null;
+  });
+
+  saveData(data);
+  res.json({ success: true, menu: data.menu });
+});
+
+// Agregar nueva bebida al menú (Bartender)
 app.post('/api/menu', (req, res) => {
   const { name, category, description, adminPassword } = req.body;
 
   if (adminPassword !== ADMIN_PASSWORD) {
-    return res.status(401).json({ error: 'Contraseña de administrador incorrecta. Solo German puede agregar bebidas.' });
+    return res.status(401).json({ error: 'Contraseña de administrador incorrecta.' });
   }
 
   if (!name) {
@@ -203,7 +417,10 @@ app.post('/api/menu', (req, res) => {
     id: Date.now().toString(),
     name: name.trim(),
     category: category || 'Variados',
-    description: description ? description.trim() : ''
+    description: description ? description.trim() : '',
+    active: true,
+    hasStockLimit: false,
+    stock: null
   };
 
   data.menu.push(newItem);
@@ -227,6 +444,21 @@ app.post('/api/orders', (req, res) => {
 
   const data = loadData();
 
+  if (!isTemporary) {
+    const drink = data.menu.find(d => d.name.toLowerCase() === drinkName.trim().toLowerCase());
+    if (drink) {
+      if (!drink.active) {
+        return res.status(400).json({ error: `La bebida "${drink.name}" no está disponible en este momento.` });
+      }
+      if (drink.hasStockLimit && typeof drink.stock === 'number') {
+        if (drink.stock <= 0) {
+          return res.status(400).json({ error: `La bebida "${drink.name}" se ha AGOTADO.` });
+        }
+        drink.stock -= 1;
+      }
+    }
+  }
+
   const newOrder = {
     id: Date.now().toString(),
     friendName: friendName.trim(),
@@ -236,7 +468,7 @@ app.post('/api/orders', (req, res) => {
     createdAt: new Date().toISOString()
   };
 
-  data.orders.unshift(newOrder);
+  data.orders.push(newOrder);
   saveData(data);
   res.status(201).json(newOrder);
 });
