@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
-import { Search, Plus, GlassWater, Package, AlertCircle } from 'lucide-react';
+import { Search, Plus, GlassWater } from 'lucide-react';
 
-export default function MenuSection({ menu, orders, onSelectDrink, onOpenAddDrink, onOpenTempDrink, onOpenStock }) {
+export default function MenuSection({ menu, orders, onSelectDrink, onOpenAddDrink, onOpenTempDrink }) {
   const [selectedCategory, setSelectedCategory] = useState('Todos');
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -92,14 +92,6 @@ export default function MenuSection({ menu, orders, onSelectDrink, onOpenAddDrin
               <GlassWater className="w-4 h-4 text-gold-400" />
               PEDIR BEBIDA FUERA DE CARTA
             </button>
-            
-            <button
-              onClick={onOpenStock}
-              className="bg-darkcard hover:bg-gold-900/30 text-gold-400/80 border border-gold-500/20 px-3 py-2 rounded-xl text-xs font-cinzel font-bold tracking-wider flex items-center gap-1.5 transition-all"
-            >
-              <Package className="w-3.5 h-3.5" />
-              GESTIONAR INVENTARIO
-            </button>
           </div>
         </div>
       </div>
@@ -167,14 +159,11 @@ export default function MenuSection({ menu, orders, onSelectDrink, onOpenAddDrin
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {drinks.map((drink) => {
                   const isPopular = mostPopularDrinkName === drink.name;
-                  const isOutOfStock = drink.stock !== undefined && drink.stock <= 0;
 
                   return (
                     <div
                       key={drink.id}
-                      className={`gold-frame rounded-2xl p-5 bg-gradient-to-br from-darkcard via-black to-darkcard flex flex-col justify-between transition-all group ${
-                        isOutOfStock ? 'opacity-70 border-rose-500/30' : 'hover:border-gold-400 hover:shadow-lg hover:shadow-gold-500/10'
-                      }`}
+                      className="gold-frame rounded-2xl p-5 bg-gradient-to-br from-darkcard via-black to-darkcard flex flex-col justify-between transition-all group hover:border-gold-400 hover:shadow-lg hover:shadow-gold-500/10"
                     >
                       <div className="space-y-2">
                         <div className="flex items-center justify-between gap-3">
@@ -190,16 +179,12 @@ export default function MenuSection({ menu, orders, onSelectDrink, onOpenAddDrin
                               </span>
                             )}
 
-                            {/* Badge AGOTADO o Badge personalizado */}
-                            {isOutOfStock ? (
-                              <span className="text-[9px] uppercase font-bold tracking-widest px-2.5 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/40">
-                                AGOTADO
-                              </span>
-                            ) : drink.badge && !isPopular ? (
+                            {/* Badge personalizado (si existe) */}
+                            {drink.badge && !isPopular && (
                               <span className="text-[9px] uppercase font-bold tracking-widest px-2.5 py-0.5 rounded-full bg-gold-500/10 text-gold-300 border border-gold-500/30">
                                 {drink.badge}
                               </span>
-                            ) : null}
+                            )}
                           </div>
                         </div>
 
@@ -207,35 +192,14 @@ export default function MenuSection({ menu, orders, onSelectDrink, onOpenAddDrin
                         <p className="text-xs text-gold-200/80 font-sans leading-relaxed pt-1.5 border-t border-gold-500/10">
                           {drink.description}
                         </p>
-
-                        {/* Indicador de Inventario/Stock */}
-                        <div className="flex items-center justify-between text-[11px] font-mono pt-1 text-gold-500/60">
-                          <span>
-                            {isOutOfStock ? (
-                              <span className="text-rose-400 font-bold flex items-center gap-1">
-                                <AlertCircle className="w-3 h-3 inline" /> Sin inventario disponible
-                              </span>
-                            ) : (
-                              <span className="text-gold-300/80">
-                                Stock: <strong>{drink.stock !== undefined ? drink.stock : 10}</strong> disponibles
-                              </span>
-                            )}
-                          </span>
-                        </div>
                       </div>
 
                       <div className="pt-4">
                         <button
                           onClick={() => onSelectDrink(drink)}
-                          disabled={isOutOfStock}
-                          className={`w-full font-cinzel font-bold text-xs py-2.5 px-4 rounded-xl border transition-all flex items-center justify-center gap-2 tracking-wider shadow-sm ${
-                            isOutOfStock
-                              ? 'bg-rose-950/30 border-rose-500/20 text-rose-400/50 cursor-not-allowed'
-                              : 'bg-darkcard hover:bg-gradient-to-r hover:from-gold-600 hover:to-amber-500 hover:text-slate-950 text-gold-300 border-gold-500/40 hover:border-gold-400'
-                          }`}
+                          className="w-full font-cinzel font-bold text-xs py-2.5 px-4 rounded-xl border transition-all flex items-center justify-center gap-2 tracking-wider shadow-sm bg-darkcard hover:bg-gradient-to-r hover:from-gold-600 hover:to-amber-500 hover:text-slate-950 text-gold-300 border-gold-500/40 hover:border-gold-400"
                         >
-                          <Plus className="w-4 h-4" />
-                          {isOutOfStock ? 'BEBIDA AGOTADA' : 'PEDIR ESTA BEBIDA'}
+                          <Plus className="w-4 h-4" /> PEDIR ESTA BEBIDA
                         </button>
                       </div>
                     </div>

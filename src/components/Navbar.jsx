@@ -1,7 +1,7 @@
 import React from 'react';
-import { Wine, Users, PlusCircle, Package, GlassWater, Boxes } from 'lucide-react';
+import { Wine, Users, GlassWater } from 'lucide-react';
 
-export default function Navbar({ activeTab, setActiveTab, ordersCount, onOpenAddDrink, onOpenTempDrink, onOpenAddSupply }) {
+export default function Navbar({ activeTab, setActiveTab, ordersCount, onOpenTempDrink }) {
   return (
     <header className="sticky top-0 z-30 bg-black/90 backdrop-blur border-b border-gold-500/30 shadow-2xl">
       {/* Top Accent Line */}
@@ -28,7 +28,7 @@ export default function Navbar({ activeTab, setActiveTab, ordersCount, onOpenAdd
         <div className="flex items-center gap-1.5 bg-darkcard/90 p-1.5 rounded-xl border border-gold-500/30 overflow-x-auto scrollbar-none">
           <button
             onClick={() => setActiveTab('menu')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-lg font-cinzel text-xs font-bold tracking-wider transition-all whitespace-nowrap ${
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-cinzel text-xs font-bold tracking-wider transition-all whitespace-nowrap ${
               activeTab === 'menu'
                 ? 'bg-gradient-to-r from-gold-600 via-gold-500 to-amber-500 text-slate-950 shadow-lg'
                 : 'text-gold-200/70 hover:text-gold-300 hover:bg-gold-900/30'
@@ -39,20 +39,8 @@ export default function Navbar({ activeTab, setActiveTab, ordersCount, onOpenAdd
           </button>
 
           <button
-            onClick={() => setActiveTab('inventory')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-lg font-cinzel text-xs font-bold tracking-wider transition-all whitespace-nowrap ${
-              activeTab === 'inventory'
-                ? 'bg-gradient-to-r from-gold-600 via-gold-500 to-amber-500 text-slate-950 shadow-lg'
-                : 'text-gold-200/70 hover:text-gold-300 hover:bg-gold-900/30'
-            }`}
-          >
-            <Boxes className="w-4 h-4" />
-            INVENTARIO BARRA
-          </button>
-
-          <button
             onClick={() => setActiveTab('orders')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-lg font-cinzel text-xs font-bold tracking-wider transition-all relative whitespace-nowrap ${
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-cinzel text-xs font-bold tracking-wider transition-all relative whitespace-nowrap ${
               activeTab === 'orders'
                 ? 'bg-gradient-to-r from-gold-600 via-gold-500 to-amber-500 text-slate-950 shadow-lg'
                 : 'text-gold-200/70 hover:text-gold-300 hover:bg-gold-900/30'
@@ -78,20 +66,10 @@ export default function Navbar({ activeTab, setActiveTab, ordersCount, onOpenAdd
           <button
             onClick={onOpenTempDrink}
             title="Pedir una bebida fuera de carta"
-            className="flex items-center gap-1.5 bg-darkcard hover:bg-gold-900/40 text-gold-300 border border-gold-500/30 px-3 py-2 rounded-xl font-cinzel text-xs font-bold tracking-wider transition-all"
+            className="flex items-center gap-2 bg-gradient-to-r from-gold-600 to-amber-500 hover:from-gold-500 hover:to-amber-400 text-slate-950 px-4 py-2 rounded-xl font-cinzel text-xs font-bold tracking-wider transition-all shadow-md"
           >
-            <GlassWater className="w-4 h-4 text-gold-400" />
-            <span className="hidden sm:inline">BEBIDA TEMPORAL</span>
-          </button>
-
-          {/* Botón Agregar Insumo */}
-          <button
-            onClick={onOpenAddSupply}
-            title="Agregar botella o insumo al inventario (Admin)"
-            className="hidden md:flex items-center gap-1.5 bg-darkcard hover:bg-gold-900/40 text-gold-300 border border-gold-500/40 px-3 py-2 rounded-xl font-cinzel text-xs font-bold tracking-wider transition-all hover:border-gold-400"
-          >
-            <Package className="w-4 h-4 text-gold-400" />
-            NUEVA BOTELLA
+            <GlassWater className="w-4 h-4" />
+            <span>BEBIDA TEMPORAL</span>
           </button>
         </div>
 

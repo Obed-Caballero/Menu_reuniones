@@ -1,30 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import MenuSection from './components/MenuSection';
-import BarInventorySection from './components/BarInventorySection';
 import OrdersList from './components/OrdersList';
 import OrderModal from './components/OrderModal';
 import AddDrinkModal from './components/AddDrinkModal';
 import TempDrinkModal from './components/TempDrinkModal';
-import StockModal from './components/StockModal';
-import AddSupplyModal from './components/AddSupplyModal';
 import { Wine } from 'lucide-react';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState('menu'); // 'menu' | 'inventory' | 'orders'
+  const [activeTab, setActiveTab] = useState('menu'); // 'menu' | 'orders'
   const [menu, setMenu] = useState([]);
-  const [supplies, setSupplies] = useState([]);
   const [orders, setOrders] = useState([]);
   const [selectedDrink, setSelectedDrink] = useState(null);
   
   // Modales
   const [isAddDrinkOpen, setIsAddDrinkOpen] = useState(false);
   const [isTempDrinkOpen, setIsTempDrinkOpen] = useState(false);
-  const [isStockOpen, setIsStockOpen] = useState(false);
-  const [isAddSupplyOpen, setIsAddSupplyOpen] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // Cargar menú, insumos y pedidos
+  // Cargar menú y pedidos
   const fetchMenu = async () => {
     try {
       const res = await fetch('/api/menu');
@@ -34,18 +28,6 @@ export default function App() {
       }
     } catch (err) {
       console.error('Error cargando menú:', err);
-    }
-  };
-
-  const fetchSupplies = async () => {
-    try {
-      const res = await fetch('/api/supplies');
-      if (res.ok) {
-        const data = await res.json();
-        setSupplies(data);
-      }
-    } catch (err) {
-      console.error('Error cargando insumos:', err);
     }
   };
 
@@ -63,7 +45,7 @@ export default function App() {
 
   useEffect(() => {
     const init = async () => {
-      await Promise.all([fetchMenu(), fetchSupplies(), fetchOrders()]);
+      await Promise.all([fetchMenu(), fetchOrders()]);
       setLoading(false);
     };
     init();
@@ -71,7 +53,6 @@ export default function App() {
     // Polling en tiempo real cada 3 segundos
     const interval = setInterval(() => {
       fetchOrders();
-      fetchSupplies();
     }, 3000);
 
     return () => clearInterval(interval);
@@ -113,88 +94,6 @@ export default function App() {
       return { success: true };
     } catch (err) {
       console.error('Error agregando bebida:', err);
-      return { error: 'Error de conexión con el servidor.' };
-    }
-  };
-
-  // Agregar Insumo/Botella a la Barra (Protegido por Admin)
-  const handleAddSupply = async (supplyData) => {
-    try {
-      const res = await fetch('/api/supplies', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(supplyData)
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        return { error: data.error || 'Error al agregar insumo.' };
-      }
-      await fetchSupplies();
-      return { success: true };
-    } catch (err) {
-      console.error('Error agregando insumo:', err);
-      return { error: 'Error de conexión con el servidor.' };
-    }
-  };
-
-  // Actualizar Insumo/Botella (Protegido por Admin)
-  const handleUpdateSupply = async (id, quantity, status, adminPassword) => {
-    try {
-      const res = await fetch(`/api/supplies/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ quantity, status, adminPassword })
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        return { error: data.error || 'Error al actualizar insumo.' };
-      }
-      await fetchSupplies();
-      return { success: true };
-    } catch (err) {
-      console.error('Error actualizando insumo:', err);
-      return { error: 'Error de conexión con el servidor.' };
-    }
-  };
-
-  // Eliminar Insumo (Protegido por Admin)
-  const handleDeleteSupply = async (id, adminPassword) => {
-    try {
-      const res = await fetch(`/api/supplies/${id}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-admin-password': adminPassword
-        }
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        return { error: data.error || 'Error al eliminar insumo.' };
-      }
-      await fetchSupplies();
-      return { success: true };
-    } catch (err) {
-      console.error('Error eliminando insumo:', err);
-      return { error: 'Error de conexión con el servidor.' };
-    }
-  };
-
-  // Actualizar Inventario de Bebidas en Lote
-  const handleUpdateStock = async (stocks, adminPassword) => {
-    try {
-      const res = await fetch('/api/menu/stock/batch', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ stocks, adminPassword })
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        return { error: data.error || 'Error al actualizar inventario.' };
-      }
-      await fetchMenu();
-      return { success: true };
-    } catch (err) {
-      console.error('Error actualizando stock:', err);
       return { error: 'Error de conexión con el servidor.' };
     }
   };
@@ -253,7 +152,6 @@ export default function App() {
         ordersCount={orders.length}
         onOpenAddDrink={() => setIsAddDrinkOpen(true)}
         onOpenTempDrink={() => setIsTempDrinkOpen(true)}
-        onOpenAddSupply={() => setIsAddSupplyOpen(true)}
       />
 
       {/* Contenido Principal */}
@@ -262,7 +160,7 @@ export default function App() {
           <div className="flex flex-col items-center justify-center py-24">
             <Wine className="w-12 h-12 text-gold-400 animate-bounce mb-3" />
             <p className="font-cinzel text-xs font-bold text-gold-300 tracking-widest uppercase">
-              Cargando Carta & Inventario de Meetings German...
+              Cargando Carta de Meetings German...
             </p>
           </div>
         ) : activeTab === 'menu' ? (
@@ -272,14 +170,6 @@ export default function App() {
             onSelectDrink={(drink) => setSelectedDrink(drink)}
             onOpenAddDrink={() => setIsAddDrinkOpen(true)}
             onOpenTempDrink={() => setIsTempDrinkOpen(true)}
-            onOpenStock={() => setIsStockOpen(true)}
-          />
-        ) : activeTab === 'inventory' ? (
-          <BarInventorySection
-            supplies={supplies}
-            onOpenAddSupply={() => setIsAddSupplyOpen(true)}
-            onUpdateSupply={handleUpdateSupply}
-            onDeleteSupply={handleDeleteSupply}
           />
         ) : (
           <OrdersList
@@ -311,21 +201,6 @@ export default function App() {
         <AddDrinkModal
           onClose={() => setIsAddDrinkOpen(false)}
           onAddDrink={handleAddDrink}
-        />
-      )}
-
-      {isAddSupplyOpen && (
-        <AddSupplyModal
-          onClose={() => setIsAddSupplyOpen(false)}
-          onAddSupply={handleAddSupply}
-        />
-      )}
-
-      {isStockOpen && (
-        <StockModal
-          menu={menu}
-          onClose={() => setIsStockOpen(false)}
-          onUpdateStock={handleUpdateStock}
         />
       )}
 

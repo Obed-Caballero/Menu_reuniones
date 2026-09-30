@@ -9,7 +9,12 @@ export default function AddDrinkModal({ onClose, onAddDrink }) {
   const [name, setName] = useState('');
   const [category, setCategory] = useState(CATEGORIES[0]);
   const [description, setDescription] = useState('');
-  const [adminPassword, setAdminPassword] = useState('');
+  
+  // Guardar y recordar contraseña en la sesión del navegador
+  const [adminPassword, setAdminPassword] = useState(() => {
+    return sessionStorage.getItem('admin_password') || sessionStorage.getItem('bartender_pass') || '';
+  });
+  
   const [error, setError] = useState('');
   const [attemptsLeft, setAttemptsLeft] = useState(MAX_ATTEMPTS);
   const [isLocked, setIsLocked] = useState(false);
@@ -66,6 +71,9 @@ export default function AddDrinkModal({ onClose, onAddDrink }) {
         setError(`Contraseña incorrecta. Te quedan ${nextAttempts} ${nextAttempts === 1 ? 'intento' : 'intentos'}.`);
       }
     } else {
+      // Guardar clave exitosa en la sesión para futuras acciones
+      sessionStorage.setItem('admin_password', adminPassword);
+      sessionStorage.setItem('bartender_pass', adminPassword);
       onClose();
     }
   };
